@@ -17,5 +17,6 @@ package org.gwtproject.editor.client;
 
 public interface EditorError {
   String getMessage();
-    Editor<?> getEditor();
+
+  Editor<?> getEditor();
 }

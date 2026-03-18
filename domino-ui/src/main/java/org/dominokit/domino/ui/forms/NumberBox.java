@@ -35,6 +35,7 @@ import org.dominokit.domino.ui.forms.validations.ValidationResult;
 import org.dominokit.domino.ui.keyboard.KeyEvent;
 import org.dominokit.domino.ui.utils.ApplyFunction;
 import org.dominokit.domino.ui.utils.DominoElement;
+import org.dominokit.domino.ui.utils.DominoI18n;
 import org.dominokit.domino.ui.utils.HasMinMaxValue;
 import org.dominokit.domino.ui.utils.HasPlaceHolder;
 import org.dominokit.domino.ui.utils.HasPostfix;
@@ -43,7 +44,6 @@ import org.dominokit.domino.ui.utils.HasStep;
 import org.dominokit.domino.ui.utils.LazyChild;
 import org.dominokit.domino.ui.utils.PostfixElement;
 import org.dominokit.domino.ui.utils.PrefixElement;
-import org.gwtproject.i18n.client.NumberFormat;
 import org.gwtproject.i18n.shared.cldr.LocaleInfo;
 import org.gwtproject.i18n.shared.cldr.NumberConstants;
 
@@ -71,16 +71,6 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
   private final ChangeListener<V> formatValueChangeListener =
       (oldValue, newValue) -> formatValue(newValue);
   private Function<String, V> valueParser = defaultValueParser();
-  private final NumberFormatSupplier defaultFormatSupplier =
-      formatPattern -> {
-        if (nonNull(getPattern())) {
-          return NumberFormat.getFormat(getPattern());
-        } else {
-          return NumberFormat.getDecimalFormat();
-        }
-      };
-  private NumberFormatSupplier numberFormatSupplier = defaultFormatSupplier;
-
   private String maxValueErrorMessage;
   private String minValueErrorMessage;
   private String invalidFormatMessage;
@@ -269,7 +259,8 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
    * @param value The value to be formatted and set in the input element.
    */
   private void formatValue(V value) {
-    getInputElement().element().value = nonNull(value) ? getNumberFormat().format(value) : "";
+    getInputElement().element().value =
+        nonNull(value) ? DominoI18n.getInstance().formatNumber((Number) value, getPattern()) : "";
   }
 
   /**
@@ -294,7 +285,8 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
   protected void doSetValue(V value) {
     if (nonNull(value)) {
       if (this.formattingEnabled) {
-        getInputElement().element().value = getNumberFormat().format(value);
+        getInputElement().element().value =
+            DominoI18n.getInstance().formatNumber((Number) value, getPattern());
       } else {
         getInputElement().element().value = String.valueOf(value);
       }
@@ -385,7 +377,10 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
    */
   @Override
   public T setMinValue(V minValue) {
-    getInputElement().element().min = nonNull(minValue) ? getNumberFormat().format(minValue) : null;
+    getInputElement().element().min =
+        nonNull(minValue)
+            ? DominoI18n.getInstance().formatNumber((Number) minValue, getPattern())
+            : null;
     return (T) this;
   }
 
@@ -398,7 +393,10 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
    */
   @Override
   public T setMaxValue(V maxValue) {
-    getInputElement().element().max = nonNull(maxValue) ? getNumberFormat().format(maxValue) : null;
+    getInputElement().element().max =
+        nonNull(maxValue)
+            ? DominoI18n.getInstance().formatNumber((Number) maxValue, getPattern())
+            : null;
     return (T) this;
   }
 
@@ -411,7 +409,8 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
    */
   @Override
   public T setStep(V step) {
-    getInputElement().element().step = nonNull(step) ? getNumberFormat().format(step) : null;
+    getInputElement().element().step =
+        nonNull(step) ? DominoI18n.getInstance().formatNumber((Number) step, getPattern()) : null;
     return (T) this;
   }
 
@@ -587,31 +586,6 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
   }
 
   /**
-   * Retrieves the current number format used by this NumberBox. If a custom pattern has been set,
-   * that format will be returned; otherwise, the default decimal format will be used.
-   *
-   * @return The NumberFormat instance corresponding to the current format.
-   */
-  protected NumberFormat getNumberFormat() {
-    return numberFormatSupplier.get(getPattern());
-  }
-
-  /**
-   * Sets a supplier to use to get a custom number format to be used by this NumberBox. if null is
-   * provided, then use default supplier.
-   *
-   * @return same component.
-   */
-  public T setNumberFormat(NumberFormatSupplier numberFormatSupplier) {
-    if (nonNull(numberFormatSupplier)) {
-      this.numberFormatSupplier = numberFormatSupplier;
-    } else {
-      this.numberFormatSupplier = defaultFormatSupplier;
-    }
-    return (T) this;
-  }
-
-  /**
    * Retrieves the custom pattern used for number formatting in this NumberBox, if any.
    *
    * @return The custom pattern string, or null if none has been set.
@@ -650,10 +624,10 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
    */
   public double parseDouble(String value) {
     try {
-      return getNumberFormat().parse(value);
+      return DominoI18n.getInstance().parseNumber(value, getPattern()).doubleValue();
     } catch (NumberFormatException e) {
       if (nonNull(getPattern())) {
-        return NumberFormat.getDecimalFormat().parse(value);
+        return DominoI18n.getInstance().parseNumber(value, null).doubleValue();
       }
       throw e;
     }
@@ -863,10 +837,5 @@ public abstract class NumberBox<T extends NumberBox<T, V>, V extends Number>
   public T setName(String name) {
     getInputElement().element().name = name;
     return (T) this;
-  }
-
-  @FunctionalInterface
-  public interface NumberFormatSupplier {
-    NumberFormat get(String pattern);
   }
 }

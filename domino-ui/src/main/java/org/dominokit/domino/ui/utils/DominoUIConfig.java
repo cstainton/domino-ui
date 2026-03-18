@@ -25,6 +25,11 @@ import org.dominokit.domino.ui.i18n.DominoUILabels;
 /** Provides configuration options for the Domino UI framework. */
 public class DominoUIConfig {
 
+  static {
+    // Initialize the default GWT i18n provider when the UI config loads
+    GwtDominoI18nProvider.init();
+  }
+
   /** The singleton instance of {@code DominoUIConfig}. */
   public static final DominoUIConfig CONFIG = new DominoUIConfig();
 
