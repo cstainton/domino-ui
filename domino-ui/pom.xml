@@ -69,10 +69,6 @@
             <artifactId>gwt-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.gwtproject.editor</groupId>
-            <artifactId>gwt-editor</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.gwtproject.timer</groupId>
             <artifactId>gwt-timer</artifactId>
         </dependency>
