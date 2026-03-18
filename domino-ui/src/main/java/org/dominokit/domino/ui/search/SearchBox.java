@@ -36,9 +36,9 @@ import org.dominokit.domino.ui.keyboard.KeyboardEventOptions;
 import org.dominokit.domino.ui.menu.direction.DropDirection;
 import org.dominokit.domino.ui.utils.BaseDominoElement;
 import org.dominokit.domino.ui.utils.ChildHandler;
+import org.dominokit.domino.ui.utils.DominoTimer;
 import org.dominokit.domino.ui.utils.PostfixAddOn;
 import org.dominokit.domino.ui.utils.PrefixAddOn;
-import org.gwtproject.timer.client.Timer;
 
 /**
  * The `SearchBox` class provides a quick search input box with various customization options.
@@ -75,7 +75,7 @@ public class SearchBox extends BaseDominoElement<HTMLDivElement, SearchBox>
   private DivElement root;
   private final TextBox textBox;
   private boolean autoSearch = true;
-  private Timer autoSearchTimer;
+  private DominoTimer autoSearchTimer;
   private EventListener autoSearchEventListener;
   private final Icon<?> searchIcon;
   private final Icon<?> clearIcon;
@@ -141,7 +141,7 @@ public class SearchBox extends BaseDominoElement<HTMLDivElement, SearchBox>
     root.appendChild(textBox.element());
 
     autoSearchTimer =
-        new Timer() {
+        new DominoTimer() {
           @Override
           public void run() {
             doSearch();
