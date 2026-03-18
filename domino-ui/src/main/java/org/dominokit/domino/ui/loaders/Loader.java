@@ -28,7 +28,7 @@ import org.dominokit.domino.ui.style.CompositeCssClass;
 import org.dominokit.domino.ui.style.CssClass;
 import org.dominokit.domino.ui.style.SwapCssClass;
 import org.dominokit.domino.ui.utils.DominoElement;
-import org.gwtproject.timer.client.Timer;
+import org.dominokit.domino.ui.utils.DominoTimer;
 
 /**
  * The Loader class is responsible for displaying loading animations on a target DOM element.
@@ -51,7 +51,7 @@ public class Loader {
   private String height;
   private boolean removeLoadingText = false;
 
-  private Timer timeOutTimer;
+  private DominoTimer timeOutTimer;
 
   private SwapCssClass loadingPosition = SwapCssClass.of(LoadingTextPosition.MIDDLE.style);
 
@@ -120,7 +120,7 @@ public class Loader {
 
     if (timeout > 0) {
       timeOutTimer =
-          new Timer() {
+          new DominoTimer() {
             @Override
             public void run() {
               stop();
