@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dominokit.domino.ui.utils;
+package org.gwtproject.i18n.shared.cldr;
 
-public class GwtI18nInitializer {
-  // This initializer is invoked by GWT when domino-ui starts
-  // But DominoUI doesn't use EntryPoint directly by default, so we'll
-  // just put a static block in DominoI18n so it defaults to GwtDominoI18nProvider
-  // if compiled with GWT.
+public interface NumberConstants {
+  String minusSign();
+
+  String decimalSeparator();
 }

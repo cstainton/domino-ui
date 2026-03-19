@@ -104,16 +104,6 @@
                 <version>1.0.0-RC1</version>
             </dependency>
             <dependency>
-                <groupId>org.dominokit.i18n</groupId>
-                <artifactId>gwt-datetimeformat</artifactId>
-                <version>${gwt.i18n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.dominokit.i18n</groupId>
-                <artifactId>gwt-numberformat</artifactId>
-                <version>${gwt.i18n.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.elemental2</groupId>
                 <artifactId>elemental2-svg</artifactId>
                 <version>${elemental2.version}</version>

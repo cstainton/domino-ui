@@ -23,14 +23,9 @@ import elemental2.dom.*;
 import java.util.Optional;
 import org.dominokit.domino.ui.IsElement;
 import org.dominokit.domino.ui.events.EventType;
-import org.gwtproject.i18n.shared.cldr.LocaleInfo;
-import org.gwtproject.i18n.shared.cldr.NumberConstants;
 
 /** A utility class for working with HTML elements and events in the DOM. */
 public class ElementUtil {
-
-  /** Locale-specific number constants used for formatting numbers and currency. */
-  static final NumberConstants numberConstants = LocaleInfo.getCurrentLocale().getNumberConstants();
 
   /** Custom event name for triggering a scroll to the top of the page. */
   public static final String DUI_EVENT_SCROLL_TOP = "dui-event-scroll-top";
@@ -232,7 +227,7 @@ public class ElementUtil {
    * @return {@code true} if the key matches the minus sign, {@code false} otherwise.
    */
   private static boolean isMinusKey(String key) {
-    return numberConstants.minusSign().equals(key);
+    return DominoI18n.getInstance().getMinusSign().equals(key);
   }
 
   /** Scrolls the page to the top. */
