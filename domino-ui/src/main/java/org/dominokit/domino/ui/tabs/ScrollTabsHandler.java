@@ -24,13 +24,13 @@ import org.dominokit.domino.ui.elements.UListElement;
 import org.dominokit.domino.ui.icons.MdiIcon;
 import org.dominokit.domino.ui.icons.lib.Icons;
 import org.dominokit.domino.ui.utils.BaseDominoElement;
-import org.gwtproject.timer.client.Timer;
+import org.dominokit.domino.ui.utils.DominoTimer;
 
 public class ScrollTabsHandler implements TabsOverflowHandler {
 
   private MdiIcon scrollLeftIcon;
   private MdiIcon scrollRightIcon;
-  private Timer timer;
+  private DominoTimer timer;
   private Consumer<Tab> closeHandler;
   private final BaseDominoElement.HandlerRecord resizeRecord =
       new BaseDominoElement.HandlerRecord();
@@ -75,7 +75,7 @@ public class ScrollTabsHandler implements TabsOverflowHandler {
               () -> {
                 updateTabs(tabsPanel, nav);
                 timer =
-                    new Timer() {
+                    new DominoTimer() {
                       @Override
                       public void run() {
                         updateTabs(panel, nav);

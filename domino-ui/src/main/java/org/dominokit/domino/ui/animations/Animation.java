@@ -23,7 +23,7 @@ import elemental2.dom.HTMLElement;
 import java.util.Arrays;
 import org.dominokit.domino.ui.IsElement;
 import org.dominokit.domino.ui.utils.DominoElement;
-import org.gwtproject.timer.client.Timer;
+import org.dominokit.domino.ui.utils.DominoTimer;
 
 /**
  * Animates components and elements.
@@ -220,7 +220,7 @@ public class Animation {
   public Animation animate() {
     this.completed = false;
     if (delay > 0) {
-      new Timer() {
+      new DominoTimer() {
         @Override
         public void run() {
           animateElement();

@@ -16,11 +16,10 @@
 package org.dominokit.domino.ui.utils;
 
 import org.dominokit.domino.ui.config.DelayedActionConfig;
-import org.gwtproject.timer.client.Timer;
 
 /**
  * The {@code DelayedExecution} class provides a simple utility for executing actions with a
- * specified delay using GWT Timer.
+ * specified delay using {@link DominoTimer}.
  *
  * <p>Example Usage:
  *
@@ -34,12 +33,12 @@ import org.gwtproject.timer.client.Timer;
  */
 public class DelayedExecution {
 
-  private final Timer timer;
+  private final DominoTimer timer;
   private final int delay;
 
   private DelayedExecution(DelayedAction delayedAction, int delay) {
     this.timer =
-        new Timer() {
+        new DominoTimer() {
           @Override
           public void run() {
             delayedAction.doAction();

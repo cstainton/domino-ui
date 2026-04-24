@@ -24,7 +24,6 @@ import jsinterop.base.Js;
 import org.dominokit.domino.ui.elements.InputElement;
 import org.dominokit.domino.ui.elements.TextAreaElement;
 import org.dominokit.domino.ui.events.EventType;
-import org.gwtproject.timer.client.Timer;
 
 /**
  * The {@code DelayedTextInput} class provides a utility for capturing text input events in an HTML
@@ -45,7 +44,7 @@ public class DelayedTextInput {
 
   private int delay;
   private final HTMLElement inputElement;
-  private Timer autoActionTimer;
+  private DominoTimer autoActionTimer;
   private DelayedAction delayedAction = () -> {};
   private DelayedAction onEnterAction = () -> delayedAction.doAction();
 
@@ -289,7 +288,7 @@ public class DelayedTextInput {
 
   protected void prepare() {
     autoActionTimer =
-        new Timer() {
+        new DominoTimer() {
           @Override
           public void run() {
             DelayedTextInput.this.delayedAction.doAction();

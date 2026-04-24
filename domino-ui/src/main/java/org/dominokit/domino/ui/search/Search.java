@@ -30,8 +30,8 @@ import org.dominokit.domino.ui.i18n.SearchLabels;
 import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.lib.Icons;
 import org.dominokit.domino.ui.utils.BaseDominoElement;
+import org.dominokit.domino.ui.utils.DominoTimer;
 import org.dominokit.domino.ui.utils.ElementUtil;
-import org.gwtproject.timer.client.Timer;
 
 /**
  * The `Search` class provides a search bar component with various functionality options.
@@ -73,7 +73,7 @@ public class Search extends BaseDominoElement<HTMLDivElement, Search>
   private SearchHandler searchHandler;
   private SearchCloseHandler closeHandler;
   private final boolean autoSearch;
-  private Timer autoSearchTimer;
+  private DominoTimer autoSearchTimer;
 
   /**
    * Constructs a new `Search` instance with the given autoSearch setting.
@@ -104,7 +104,7 @@ public class Search extends BaseDominoElement<HTMLDivElement, Search>
     this.searchHandler = searchToken -> {};
     this.closeHandler = () -> {};
     autoSearchTimer =
-        new Timer() {
+        new DominoTimer() {
           @Override
           public void run() {
             searchHandler.onSearch(searchInput.element().value);

@@ -69,14 +69,6 @@
             <artifactId>gwt-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.gwtproject.timer</groupId>
-            <artifactId>gwt-timer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject.safehtml</groupId>
-            <artifactId>gwt-safehtml</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.dominokit.i18n</groupId>
             <artifactId>gwt-datetimeformat</artifactId>
         </dependency>

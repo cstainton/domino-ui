@@ -41,9 +41,9 @@ import org.dominokit.domino.ui.style.CssClass;
 import org.dominokit.domino.ui.style.GenericCss;
 import org.dominokit.domino.ui.utils.BaseDominoElement;
 import org.dominokit.domino.ui.utils.ChildHandler;
+import org.dominokit.domino.ui.utils.DominoScheduler;
+import org.dominokit.domino.ui.utils.DominoTimer;
 import org.dominokit.domino.ui.utils.SwipeUtil;
-import org.gwtproject.core.client.Scheduler;
-import org.gwtproject.timer.client.Timer;
 
 /**
  * A slideshow component for cycling through elements.
@@ -69,7 +69,7 @@ public class Carousel extends BaseDominoElement<HTMLDivElement, Carousel>
   private final DivElement element;
 
   private final List<Slide> slides = new ArrayList<>();
-  private final Timer timer;
+  private final DominoTimer timer;
   private Slide activeSlide;
   private Slide targetSlide;
   private int autoSlideDuration = 3000;
@@ -111,7 +111,7 @@ public class Carousel extends BaseDominoElement<HTMLDivElement, Carousel>
                         .addEventListener("click", evt -> next()))
             .addCss(carousel);
     timer =
-        new Timer() {
+        new DominoTimer() {
           @Override
           public void run() {
             nextSlide();
@@ -284,7 +284,7 @@ public class Carousel extends BaseDominoElement<HTMLDivElement, Carousel>
       slide.getIndicatorElement().addCss(dui_active);
       activeSlide.getIndicatorElement().removeCss(dui_active);
       slide.addCss(getPositionStyle(slide, source));
-      Scheduler.get()
+      DominoScheduler.get()
           .scheduleFixedDelay(
               () -> {
                 activeSlide.getIndicatorElement().removeCss(dui_active);
