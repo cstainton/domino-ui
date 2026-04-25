@@ -61,15 +61,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.dominokit</groupId>
-            <artifactId>gwt-validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject.core</groupId>
-            <artifactId>gwt-core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-svg</artifactId>
         </dependency>
