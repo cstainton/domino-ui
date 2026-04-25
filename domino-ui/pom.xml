@@ -68,14 +68,6 @@
             <groupId>org.gwtproject.core</groupId>
             <artifactId>gwt-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.dominokit.i18n</groupId>
-            <artifactId>gwt-datetimeformat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dominokit.i18n</groupId>
-            <artifactId>gwt-numberformat</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.google.elemental2</groupId>
