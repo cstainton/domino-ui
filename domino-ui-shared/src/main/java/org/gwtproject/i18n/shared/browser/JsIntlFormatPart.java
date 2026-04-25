@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gwtproject.editor.client;
+package org.gwtproject.i18n.shared.browser;
 
-public interface EditorError {
-  String getMessage();
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-  Editor<?> getEditor();
+/** A single part returned by {@code Intl.DateTimeFormat.prototype.formatToParts()}. */
+@JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
+public class JsIntlFormatPart {
+
+  /** The type of this part (e.g. {@code "year"}, {@code "month"}, {@code "literal"}). */
+  public String type;
+
+  /** The string value of this part in the formatted output. */
+  public String value;
 }

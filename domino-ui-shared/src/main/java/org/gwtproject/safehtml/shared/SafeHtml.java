@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gwtproject.editor.client;
+package org.gwtproject.safehtml.shared;
 
-public interface EditorError {
-  String getMessage();
+/**
+ * Lightweight stub of GWT's {@code SafeHtml} so domino-ui can be compiled with TeaVM without
+ * depending on the gwt-safehtml runtime.
+ */
+public interface SafeHtml {
 
-  Editor<?> getEditor();
+  String asString();
 }

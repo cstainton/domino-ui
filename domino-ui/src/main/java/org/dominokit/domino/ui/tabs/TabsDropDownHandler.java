@@ -29,14 +29,14 @@ import org.dominokit.domino.ui.icons.lib.Icons;
 import org.dominokit.domino.ui.menu.direction.DropDirection;
 import org.dominokit.domino.ui.popover.Popover;
 import org.dominokit.domino.ui.utils.BaseDominoElement;
-import org.gwtproject.timer.client.Timer;
+import org.dominokit.domino.ui.utils.DominoTimer;
 
 public class TabsDropDownHandler implements TabsOverflowHandler {
 
   private final MdiIcon dropDownIcon;
   private final Popover popover;
   private final List<Tab> invisibleTabs = new ArrayList<>();
-  private Timer timer;
+  private DominoTimer timer;
   private Consumer<Tab> closeHandler;
   private Tab.ActivationHandler activationHandler;
   private Tab lastVisible;
@@ -70,7 +70,7 @@ public class TabsDropDownHandler implements TabsOverflowHandler {
                   });
 
           timer =
-              new Timer() {
+              new DominoTimer() {
                 @Override
                 public void run() {
                   updateTabs(panel, nav);

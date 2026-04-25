@@ -61,31 +61,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.dominokit</groupId>
-            <artifactId>gwt-validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject.core</groupId>
-            <artifactId>gwt-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject.timer</groupId>
-            <artifactId>gwt-timer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject.safehtml</groupId>
-            <artifactId>gwt-safehtml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dominokit.i18n</groupId>
-            <artifactId>gwt-datetimeformat</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dominokit.i18n</groupId>
-            <artifactId>gwt-numberformat</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-svg</artifactId>
         </dependency>
@@ -204,4 +179,45 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+            TeaVM compilation profile.
+
+            Run with `mvn -Pteavm package` to produce a JavaScript bundle at
+            target/teavm-js/domino-ui.js.  The teavm-maven-plugin is declared in
+            the root pluginManagement so no version is needed here.
+
+            TeaVMEntryPoint is a minimal stub; downstream applications should
+            supply their own entry point that bootstraps their UI.
+        -->
+        <profile>
+            <id>teavm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.teavm</groupId>
+                        <artifactId>teavm-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>teavm-build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.dominokit.domino.ui.teavm.TeaVMEntryPoint</mainClass>
+                                    <targetDirectory>${project.build.directory}/teavm-js</targetDirectory>
+                                    <targetFileName>domino-ui.js</targetFileName>
+                                    <minifying>false</minifying>
+                                    <optimizationLevel>SIMPLE</optimizationLevel>
+                                    <sourceMap>false</sourceMap>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

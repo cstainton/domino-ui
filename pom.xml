@@ -78,6 +78,7 @@
         <gwt.i18n.version>1.0.2</gwt.i18n.version>
         <domino.doc.tool.version>1.0.0</domino.doc.tool.version>
         <gwt.validation.api.version>1.0.3</gwt.validation.api.version>
+        <teavm.version>0.10.2</teavm.version>
     </properties>
 
     <dependencyManagement>
@@ -170,6 +171,21 @@
                 <artifactId>junit</artifactId>
                 <version>4.13.2</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-classlib</artifactId>
+                <version>${teavm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-jso</artifactId>
+                <version>${teavm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-jso-apis</artifactId>
+                <version>${teavm.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -394,6 +410,11 @@
                     <version>${maven.gwt.plugin}</version>
                     <extensions>true</extensions>
                 </plugin>
+                <plugin>
+                    <groupId>org.teavm</groupId>
+                    <artifactId>teavm-maven-plugin</artifactId>
+                    <version>${teavm.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -418,6 +439,37 @@
                         <artifactId>central-publishing-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
+            </build>
+        </profile>
+        <!--
+            TeaVM build profile.
+
+            Activate with `mvn -Pteavm ...` to build domino-ui without invoking the
+            gwt-maven-plugin's GWT3 compilation step. The resulting jar is consumable by
+            downstream applications that compile to JavaScript via TeaVM.
+
+            This profile only disables the GWT compile step. TeaVM runtime dependencies
+            (teavm-classlib, teavm-jso, teavm-jso-apis) are exposed via dependencyManagement
+            so individual modules can opt in without polluting the build classpath of the
+            annotation processor / tooling modules. domino-ui is a library (no entry
+            point), so the teavm-maven-plugin itself is registered in pluginManagement for
+            downstream apps to invoke; this profile does not run teavm:compile.
+        -->
+        <profile>
+            <id>teavm</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>net.ltgt.gwt.maven</groupId>
+                            <artifactId>gwt-maven-plugin</artifactId>
+                            <configuration>
+                                <skipModule>true</skipModule>
+                                <skipCompilation>true</skipCompilation>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
     </profiles>
