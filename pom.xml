@@ -187,6 +187,11 @@
                 <artifactId>teavm-jso-apis</artifactId>
                 <version>${teavm.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-extras-slf4j</artifactId>
+                <version>${teavm.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

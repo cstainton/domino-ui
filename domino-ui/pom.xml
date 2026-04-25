@@ -193,6 +193,17 @@
         -->
         <profile>
             <id>teavm</id>
+            <dependencies>
+                <!--
+                    TeaVM compiler plugin that intercepts SLF4J LoggerFactory.getLogger() calls
+                    at bytecode-transformation time and replaces them with TeaVM's console-backed
+                    logger. No runtime SLF4J binding is needed; the transformer handles it.
+                -->
+                <dependency>
+                    <groupId>org.teavm</groupId>
+                    <artifactId>teavm-extras-slf4j</artifactId>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
