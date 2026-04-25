@@ -193,17 +193,6 @@
         -->
         <profile>
             <id>teavm</id>
-            <dependencies>
-                <!--
-                    TeaVM compiler plugin that intercepts SLF4J LoggerFactory.getLogger() calls
-                    at bytecode-transformation time and replaces them with TeaVM's console-backed
-                    logger. No runtime SLF4J binding is needed; the transformer handles it.
-                -->
-                <dependency>
-                    <groupId>org.teavm</groupId>
-                    <artifactId>teavm-extras-slf4j</artifactId>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -214,7 +203,7 @@
                                 <id>teavm-build</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>compile</goal>
                                 </goals>
                                 <configuration>
                                     <mainClass>org.dominokit.domino.ui.teavm.TeaVMEntryPoint</mainClass>
@@ -226,6 +215,33 @@
                                 </configuration>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <!--
+                                These TeaVM modules register TeaVMPlugin services (discovered via
+                                ServiceLoader) that the compiler needs. They go on the PLUGIN
+                                classloader, not the project classpath, to avoid TeaVM trying to
+                                compile its own internal classes as user code.
+
+                                teavm-classlib : lambda substitutors, java.* implementations
+                                teavm-jso-impl : JsInterop/@JsType processing
+                                teavm-extras-slf4j: SLF4J LoggerFactory transformer
+                            -->
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-classlib</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-jso-impl</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-extras-slf4j</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
