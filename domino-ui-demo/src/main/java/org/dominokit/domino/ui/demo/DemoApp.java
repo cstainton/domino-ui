@@ -38,8 +38,8 @@ import org.teavm.jso.dom.html.HTMLInputElement;
  *
  * <p>Build: {@code mvn -pl domino-history-teavm,domino-ui-demo -Pteavm package}
  *
- * <p>Run: copy {@code target/teavm-js/demo.js} next to {@code
- * src/main/resources/static/index.html} and open it in a browser.
+ * <p>Run: copy {@code target/teavm-js/demo.js} next to {@code src/main/resources/static/index.html}
+ * and open it in a browser.
  */
 public class DemoApp {
 
