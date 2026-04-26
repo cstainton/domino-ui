@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.dominokit</groupId>
+        <artifactId>domino-ui-parent</artifactId>
+        <version>2.1.0</version>
+    </parent>
+
+    <artifactId>domino-ui-demo</artifactId>
+    <packaging>jar</packaging>
+
+    <name>domino-ui-demo</name>
+    <description>TeaVM demo exercising domino-ui, domino-jackson, and domino-history</description>
+
+    <dependencies>
+        <!-- TeaVM's own browser DOM/browser API (user-facing JSO types) -->
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso-apis</artifactId>
+        </dependency>
+
+        <!-- domino-jackson runtime + APT code generator -->
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-jackson</artifactId>
+            <version>${jackson.apt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-jackson-processor</artifactId>
+            <version>${jackson.apt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            domino-history-teavm: TeaVM port of domino-history-client.
+            Provides StateHistory (AppHistory impl) built on teavm-jso-apis instead of elemental2.
+            Transitively pulls in domino-history-shared (pure-Java token parsing).
+        -->
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-history-teavm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- SLF4J backend — runtime only; teavm-extras-slf4j replaces it at TeaVM compile time -->
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-slf4j-logger</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>11</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.dominokit</groupId>
+                            <artifactId>domino-jackson-processor</artifactId>
+                            <version>${jackson.apt.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!--
+            Compile the demo app to JavaScript with TeaVM.
+
+            Run: mvn -pl domino-history-teavm,domino-ui-demo -Pteavm package
+            Output: domino-ui-demo/target/teavm-js/demo.js
+            Open:   domino-ui-demo/src/main/resources/static/index.html
+        -->
+        <profile>
+            <id>teavm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.teavm</groupId>
+                        <artifactId>teavm-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>teavm-build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.dominokit.domino.ui.demo.DemoApp</mainClass>
+                                    <targetDirectory>${project.build.directory}/teavm-js</targetDirectory>
+                                    <targetFileName>demo.js</targetFileName>
+                                    <minifying>false</minifying>
+                                    <optimizationLevel>SIMPLE</optimizationLevel>
+                                    <sourceMap>false</sourceMap>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-classlib</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-jso-impl</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-extras-slf4j</artifactId>
+                                <version>${teavm.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>domino-ui TeaVM demo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 2em auto; padding: 0 1em; }
+        header { border-bottom: 2px solid #333; margin-bottom: 1em; }
+        nav { margin-bottom: 1.5em; }
+        nav a { text-decoration: none; color: #0066cc; }
+        nav a:hover { text-decoration: underline; }
+        pre { background: #f4f4f4; padding: 1em; border-radius: 4px; overflow-x: auto; }
+        input[type=text] { padding: 0.4em; font-size: 1em; width: 60%; }
+        button { padding: 0.4em 1em; font-size: 1em; margin-left: 0.5em; }
+        ul { list-style: none; padding: 0; }
+        ul li { padding: 0.3em 0; }
+    </style>
+</head>
+<body>
+    <div id="app">Loading…</div>
+
+    <!--
+        Build the JS with:
+            mvn -pl domino-ui-demo -Pteavm package
+
+        Then either:
+          a) Copy target/teavm-js/demo.js here and open this file in a browser.
+          b) Run a local server: python3 -m http.server 8080
+             then browse to http://localhost:8080/
+    -->
+    <script src="demo.js"></script>
+</body>
+</html>
