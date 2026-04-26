@@ -3,31 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>domino-ui TeaVM demo</title>
+    <title>Geo Todo List — domino-ui TeaVM demo</title>
     <style>
-        body { font-family: sans-serif; max-width: 700px; margin: 2em auto; padding: 0 1em; }
+        body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; color: #222; }
         header { border-bottom: 2px solid #333; margin-bottom: 1em; }
-        nav { margin-bottom: 1.5em; }
-        nav a { text-decoration: none; color: #0066cc; }
-        nav a:hover { text-decoration: underline; }
-        pre { background: #f4f4f4; padding: 1em; border-radius: 4px; overflow-x: auto; }
-        input[type=text] { padding: 0.4em; font-size: 1em; width: 60%; }
-        button { padding: 0.4em 1em; font-size: 1em; margin-left: 0.5em; }
-        ul { list-style: none; padding: 0; }
-        ul li { padding: 0.3em 0; }
+        header h1 { margin: 0.2em 0; }
+        header p  { margin: 0.2em 0 0.6em; color: #555; font-size: 0.9em; }
+        nav { margin-bottom: 1.5em; display: flex; gap: 0.5em; }
+        button { padding: 0.4em 1em; font-size: 1em; cursor: pointer; }
+        input[type=text] { padding: 0.4em; font-size: 1em; width: 320px; }
+        pre  { background: #f4f4f4; padding: 1em; border-radius: 4px; overflow-x: auto; font-size: 0.85em; word-break: break-all; white-space: pre-wrap; }
+        a    { color: #0066cc; }
+
+        /* List / detail tables */
+        table { border-collapse: collapse; width: 100%; margin: 0.8em 0; }
+        th, td { border: 1px solid #ddd; padding: 0.45em 0.8em; text-align: left; }
+        thead th { background: #f0f0f0; font-weight: 600; }
+        tbody tr:hover { background: #f9f9f9; }
+        table.detail th { width: 120px; background: #f0f0f0; }
+
+        /* Geolocation capture box */
+        .loc-section { background: #f8f8ff; border: 1px solid #ccd; border-radius: 4px; padding: 0.8em 1em; margin: 1em 0; }
+        .loc-section p { margin: 0 0 0.6em; }
+
+        /* Small annotation below the list */
+        .note { font-size: 0.82em; color: #666; word-break: break-all; }
     </style>
 </head>
 <body>
     <div id="app">Loading…</div>
 
     <!--
-        Build the JS with:
-            mvn -pl domino-ui-demo -Pteavm package
+        Build:
+            mvn -pl domino-history-teavm,domino-rest-teavm,domino-ui-demo -Pteavm package
 
-        Then either:
-          a) Copy target/teavm-js/demo.js here and open this file in a browser.
-          b) Run a local server: python3 -m http.server 8080
-             then browse to http://localhost:8080/
+        Serve (from this directory after copying target/teavm-js/demo.js here):
+            python3 -m http.server 8080
+            open http://localhost:8080/
     -->
     <script src="demo.js"></script>
 </body>
