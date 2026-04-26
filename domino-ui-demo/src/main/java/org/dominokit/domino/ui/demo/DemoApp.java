@@ -17,11 +17,11 @@ package org.dominokit.domino.ui.demo;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.dominokit.domino.history.HistoryToken;
-import org.dominokit.domino.history.StateHistoryToken;
+import org.dominokit.domino.client.history.StateHistory;
+import org.dominokit.domino.history.AppHistory;
+import org.dominokit.domino.history.StateToken;
+import org.dominokit.domino.history.TokenFilter;
 import org.teavm.jso.browser.Window;
-import org.teavm.jso.dom.events.Event;
-import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLInputElement;
@@ -31,11 +31,12 @@ import org.teavm.jso.dom.html.HTMLInputElement;
  *
  * <ul>
  *   <li>domino-jackson — APT-generated JSON mapper round-trips a {@link TodoItem}
- *   <li>domino-history-shared — pure-Java URL-token parsing (HistoryToken)
+ *   <li>domino-history-teavm — {@link StateHistory} (HTML5 pushState routing) replaces the manual
+ *       {@code hashchange} listener used in the previous iteration
  *   <li>TeaVM JSO DOM API — direct browser DOM manipulation
  * </ul>
  *
- * <p>Build: {@code mvn -pl domino-ui-demo -Pteavm package}
+ * <p>Build: {@code mvn -pl domino-history-teavm,domino-ui-demo -Pteavm package}
  *
  * <p>Run: copy {@code target/teavm-js/demo.js} next to {@code
  * src/main/resources/static/index.html} and open it in a browser.
@@ -44,11 +45,14 @@ public class DemoApp {
 
   private static final List<TodoItem> ITEMS = new ArrayList<>();
   private static HTMLElement contentEl;
+  private static AppHistory history;
 
   public static void main(String[] args) {
     ITEMS.add(new TodoItem(1, "Port domino-ui to TeaVM", true));
     ITEMS.add(new TodoItem(2, "Wire domino-jackson serialization", true));
-    ITEMS.add(new TodoItem(3, "Integrate domino-history routing", false));
+    ITEMS.add(new TodoItem(3, "Integrate domino-history routing", true));
+
+    history = new StateHistory();
 
     HTMLDocument doc = Window.current().getDocument();
 
@@ -65,37 +69,20 @@ public class DemoApp {
     root.appendChild(header);
 
     HTMLElement nav = doc.createElement("nav");
-    nav.appendChild(navLink(doc, "Todo list", "#/"));
-    nav.appendChild(navLink(doc, "Add item", "#/add"));
+    nav.appendChild(navButton(doc, "Todo list", ""));
+    nav.appendChild(navButton(doc, "Add item", "add"));
     root.appendChild(nav);
 
     contentEl = doc.createElement("main");
     root.appendChild(contentEl);
 
-    // Hash-based routing via domino-history-shared's HistoryToken parser
-    Window.current()
-        .addEventListener(
-            "hashchange",
-            (EventListener<Event>) evt -> route(currentPath()));
+    // Register route listeners via domino-history-teavm's StateHistory.
+    // TokenFilter.startsWith("add") matches the "add" path; TokenFilter.any() is the catch-all.
+    history.listen(TokenFilter.startsWith("add"), state -> renderAdd());
+    history.listen(TokenFilter.any(), state -> renderList());
 
-    route(currentPath());
-  }
-
-  private static String currentPath() {
-    String hash = Window.current().getLocation().getHash();
-    // strip leading '#' to get a clean token for domino-history-shared
-    return hash.startsWith("#") ? hash.substring(1) : "/";
-  }
-
-  private static void route(String rawPath) {
-    // Use domino-history-shared's StateHistoryToken for URL parsing
-    HistoryToken token = new StateHistoryToken(rawPath);
-    String path = token.path();
-    if (path.startsWith("/add")) {
-      renderAdd();
-    } else {
-      renderList();
-    }
+    // Fire the current URL token so the correct view renders on first load.
+    history.fireCurrentStateHistory();
   }
 
   private static void renderList() {
@@ -156,25 +143,27 @@ public class DemoApp {
     button.setInnerText("Add");
     button.addEventListener(
         "click",
-        (EventListener<Event>)
-            evt -> {
-              HTMLInputElement titleInput = doc.getElementById("new-item-title").cast();
-              String title = titleInput.getValue().trim();
-              if (!title.isEmpty()) {
-                ITEMS.add(new TodoItem(ITEMS.size() + 1, title, false));
-                titleInput.setValue("");
-                Window.current().getLocation().setHash("#/");
-              }
-            });
+        evt -> {
+          HTMLInputElement titleInput = doc.getElementById("new-item-title").cast();
+          String title = titleInput.getValue().trim();
+          if (!title.isEmpty()) {
+            ITEMS.add(new TodoItem(ITEMS.size() + 1, title, false));
+            titleInput.setValue("");
+            // Navigate back to the list via StateHistory (fires listeners + updates URL).
+            history.fireState(StateToken.of(""));
+          }
+        });
     form.appendChild(button);
     contentEl.appendChild(form);
   }
 
-  private static HTMLElement navLink(HTMLDocument doc, String label, String href) {
-    HTMLElement a = doc.createElement("a");
-    a.setAttribute("href", href);
-    a.setInnerText(label);
-    a.setAttribute("style", "margin-right:1em");
-    return a;
+  /** Creates a button-style nav link that navigates via {@link StateHistory#fireState}. */
+  private static HTMLElement navButton(HTMLDocument doc, String label, String token) {
+    HTMLElement button = doc.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute("style", "margin-right:0.5em");
+    button.setInnerText(label);
+    button.addEventListener("click", evt -> history.fireState(StateToken.of(token)));
+    return button;
   }
 }
