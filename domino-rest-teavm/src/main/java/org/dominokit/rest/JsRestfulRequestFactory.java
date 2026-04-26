@@ -1,0 +1,63 @@
+/*
+ * Copyright © 2019 Dominokit
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.dominokit.rest;
+
+import org.dominokit.rest.js.JsRestfulRequest;
+import org.dominokit.rest.shared.RestfulRequest;
+
+/** Creates {@link JsRestfulRequest} instances for each HTTP method. */
+public class JsRestfulRequestFactory implements RestfulRequestFactory {
+
+  @Override
+  public RestfulRequest request(String uri, String method) {
+    return new JsRestfulRequest(uri, method);
+  }
+
+  @Override
+  public RestfulRequest get(String uri) {
+    return request(uri, RestfulRequest.GET);
+  }
+
+  @Override
+  public RestfulRequest post(String uri) {
+    return request(uri, RestfulRequest.POST);
+  }
+
+  @Override
+  public RestfulRequest delete(String uri) {
+    return request(uri, RestfulRequest.DELETE);
+  }
+
+  @Override
+  public RestfulRequest head(String uri) {
+    return request(uri, RestfulRequest.HEAD);
+  }
+
+  @Override
+  public RestfulRequest put(String uri) {
+    return request(uri, RestfulRequest.PUT);
+  }
+
+  @Override
+  public RestfulRequest options(String uri) {
+    return request(uri, RestfulRequest.OPTIONS);
+  }
+
+  @Override
+  public RestfulRequest patch(String uri) {
+    return request(uri, RestfulRequest.PATCH);
+  }
+}
