@@ -53,6 +53,7 @@
         <module>domino-ui-shared</module>
         <module>domino-ui-tools</module>
         <module>domino-ui-webjar</module>
+        <module>domino-ui-demo</module>
     </modules>
 
     <properties>
