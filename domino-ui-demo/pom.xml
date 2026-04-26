@@ -15,10 +15,6 @@
     <name>domino-ui-demo</name>
     <description>TeaVM demo exercising domino-ui, domino-jackson, and domino-history</description>
 
-    <properties>
-        <domino.history.version>1.0.5</domino.history.version>
-    </properties>
-
     <dependencies>
         <!-- TeaVM's own browser DOM/browser API (user-facing JSO types) -->
         <dependency>
@@ -40,14 +36,14 @@
         </dependency>
 
         <!--
-            domino-history-shared: pure-Java URL token parsing with no browser dependencies.
-            domino-history-client uses elemental2 which is GWT/J2CL-only; the demo implements
-            its own TeaVM-native routing using teavm-jso-apis instead.
+            domino-history-teavm: TeaVM port of domino-history-client.
+            Provides StateHistory (AppHistory impl) built on teavm-jso-apis instead of elemental2.
+            Transitively pulls in domino-history-shared (pure-Java token parsing).
         -->
         <dependency>
             <groupId>org.dominokit</groupId>
-            <artifactId>domino-history-shared</artifactId>
-            <version>${domino.history.version}</version>
+            <artifactId>domino-history-teavm</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- SLF4J backend — runtime only; teavm-extras-slf4j replaces it at TeaVM compile time -->
@@ -81,7 +77,7 @@
         <!--
             Compile the demo app to JavaScript with TeaVM.
 
-            Run: mvn -pl domino-ui-demo -Pteavm package
+            Run: mvn -pl domino-history-teavm,domino-ui-demo -Pteavm package
             Output: domino-ui-demo/target/teavm-js/demo.js
             Open:   domino-ui-demo/src/main/resources/static/index.html
         -->
