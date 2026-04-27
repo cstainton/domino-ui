@@ -43,7 +43,15 @@
         <dependency>
             <groupId>org.dominokit</groupId>
             <artifactId>domino-history-teavm</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <!--
+            domino-rest-teavm: TeaVM port of domino-rest-client.
+            Provides DominoRestConfig.initDefaults() and RestfulRequest backed by XHR.
+        -->
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-rest-teavm</artifactId>
         </dependency>
 
         <!-- SLF4J backend — runtime only; teavm-extras-slf4j replaces it at TeaVM compile time -->

@@ -201,6 +201,16 @@
                 <artifactId>teavm-extras-slf4j</artifactId>
                 <version>${teavm.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.dominokit</groupId>
+                <artifactId>domino-history-teavm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dominokit</groupId>
+                <artifactId>domino-rest-teavm</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
