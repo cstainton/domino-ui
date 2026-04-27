@@ -15,8 +15,6 @@
  */
 package org.dominokit.domino.ui.demo;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.dominokit.domino.client.history.StateHistory;
 import org.dominokit.domino.history.AppHistory;
 import org.dominokit.domino.history.StateToken;
@@ -35,34 +33,34 @@ import org.teavm.jso.dom.html.HTMLInputElement;
  * <p>Exercises:
  *
  * <ul>
- *   <li>domino-rest-teavm — REST GET / POST against the public JSONPlaceholder API
+ *   <li>domino-rest-teavm — REST GET / POST against a local PostgREST instance
  *   <li>domino-jackson — APT-generated JSON mapper ({@link GeoTodo_MapperImpl})
  *   <li>domino-history-teavm — HTML5 pushState routing via {@link StateHistory}
  *   <li>TeaVM Geolocation API — {@code Navigator.getGeolocation().getCurrentPosition()}
  * </ul>
  *
+ * <p>Backend: Postgres + PostgREST running via Docker (see supabase-local/docker-compose.yml).
+ * lat/lng are stored as real columns and round-trip through the API.
+ *
  * <p>Build: {@code mvn -pl domino-history-teavm,domino-rest-teavm,domino-ui-demo -Pteavm package}
  *
- * <p>Serve: {@code python3 -m http.server 8080} inside {@code
- * domino-ui-demo/src/main/resources/static/} after copying {@code target/teavm-js/demo.js} there.
+ * <p>Serve: copy {@code target/teavm-js/demo.js} next to {@code
+ * src/main/resources/static/index.html} and run {@code python3 -m http.server 8080}.
  */
 public class DemoApp {
 
-  private static final String API = "https://jsonplaceholder.typicode.com";
-
-  /** GPS coordinates captured during an "Add Todo" session, keyed by server-assigned todo ID. */
-  private static final Map<Integer, double[]> LOCATIONS = new HashMap<>();
+  /** PostgREST base URL — change host/port if your Docker setup differs. */
+  private static final String API = "http://localhost:3000";
 
   private static AppHistory history;
   private static HTMLElement contentEl;
 
-  /** Lat/lng captured on the Add form; {@link Double#NaN} when not yet acquired. */
-  private static double pendingLat = Double.NaN;
+  /** Lat/lng captured on the Add form; null when not yet acquired. */
+  private static Double pendingLat = null;
 
-  private static double pendingLng = Double.NaN;
+  private static Double pendingLng = null;
 
   public static void main(String[] args) {
-    // Bootstrap the TeaVM REST factory so RestfulRequest.get/post work.
     DominoRestConfig.initDefaults();
     history = new StateHistory();
 
@@ -80,7 +78,7 @@ public class DemoApp {
     HTMLElement h1 = doc.createElement("h1");
     h1.setInnerText("Geo Todo List");
     HTMLElement sub = doc.createElement("p");
-    sub.setInnerText("Todos from JSONPlaceholder API with optional GPS tagging");
+    sub.setInnerText("Persistent todos backed by Postgres + PostgREST, with optional GPS tagging");
     header.appendChild(h1);
     header.appendChild(sub);
     root.appendChild(header);
@@ -93,7 +91,7 @@ public class DemoApp {
     contentEl = doc.createElement("main");
     root.appendChild(contentEl);
 
-    // Single dispatch listener — avoids multiple listeners all matching TokenFilter.any().
+    // Single dispatch listener avoids all-matching TokenFilter.any() double-firing.
     history.listen(
         TokenFilter.any(),
         state -> {
@@ -120,7 +118,8 @@ public class DemoApp {
     HTMLDocument doc = Window.current().getDocument();
     showMessage(doc, "Loading todos...");
 
-    RestfulRequest.get(API + "/todos?_limit=10")
+    // PostgREST: GET /todos?limit=10&order=id
+    get(API + "/todos?limit=10&order=id")
         .onSuccess(
             response -> {
               GeoTodo[] todos =
@@ -158,9 +157,8 @@ public class DemoApp {
       td(doc, tr, todo.isCompleted() ? "done" : "open");
 
       HTMLElement tdLoc = doc.createElement("td");
-      double[] coords = LOCATIONS.get(todo.getId());
-      if (coords != null) {
-        tdLoc.setInnerText(fmtCoord(coords[0]) + ", " + fmtCoord(coords[1]));
+      if (todo.getLat() != null && todo.getLng() != null) {
+        tdLoc.setInnerText(fmtCoord(todo.getLat()) + ", " + fmtCoord(todo.getLng()));
       }
       tr.appendChild(tdLoc);
 
@@ -180,7 +178,7 @@ public class DemoApp {
     if (todos.length > 0) {
       HTMLElement note = doc.createElement("p");
       note.setAttribute("class", "note");
-      note.setInnerText("domino-jackson output: " + GeoTodo_MapperImpl.INSTANCE.write(todos[0]));
+      note.setInnerText("domino-jackson: " + GeoTodo_MapperImpl.INSTANCE.write(todos[0]));
       contentEl.appendChild(note);
     }
   }
@@ -189,15 +187,14 @@ public class DemoApp {
 
   private static void renderAdd() {
     HTMLDocument doc = Window.current().getDocument();
-    pendingLat = Double.NaN;
-    pendingLng = Double.NaN;
+    pendingLat = null;
+    pendingLng = null;
     contentEl.setInnerHTML("");
 
     HTMLElement h2 = doc.createElement("h2");
     h2.setInnerText("Add a Todo");
     contentEl.appendChild(h2);
 
-    // Title row
     HTMLElement titleRow = doc.createElement("p");
     HTMLElement label = doc.createElement("label");
     label.setInnerText("Title: ");
@@ -209,7 +206,6 @@ public class DemoApp {
     titleRow.appendChild(label);
     contentEl.appendChild(titleRow);
 
-    // Geolocation section
     HTMLElement locSection = doc.createElement("div");
     locSection.setAttribute("class", "loc-section");
 
@@ -225,7 +221,6 @@ public class DemoApp {
     locSection.appendChild(geoBtn);
     contentEl.appendChild(locSection);
 
-    // Submit row
     HTMLElement submitRow = doc.createElement("p");
     HTMLElement submitBtn = doc.createElement("button");
     submitBtn.setAttribute("type", "button");
@@ -271,21 +266,23 @@ public class DemoApp {
     draft.setUserId(1);
     draft.setTitle(title);
     draft.setCompleted(false);
+    draft.setLat(pendingLat);
+    draft.setLng(pendingLng);
     String json = GeoTodo_MapperImpl.INSTANCE.write(draft);
 
-    // Capture lat/lng into effectively-final locals for the lambda.
-    final double lat = pendingLat;
-    final double lng = pendingLng;
-
-    RestfulRequest.post(API + "/todos")
+    // Prefer: return=representation asks PostgREST to return the inserted row (with generated id).
+    post(API + "/todos")
+        .putHeader("Prefer", "return=representation")
         .onSuccess(
             response -> {
-              GeoTodo saved = GeoTodo_MapperImpl.INSTANCE.read(response.getBodyAsString());
-              if (!Double.isNaN(lat)) {
-                LOCATIONS.put(saved.getId(), new double[] {lat, lng});
+              // PostgREST returns an array even for single inserts
+              GeoTodo[] created =
+                  GeoTodo_MapperImpl.INSTANCE.readArray(response.getBodyAsString(), GeoTodo[]::new);
+              if (created.length > 0) {
+                history.fireState(StateToken.of("todo/" + created[0].getId()));
+              } else {
+                history.fireState(StateToken.of(""));
               }
-              // Navigate to the detail page so the location is immediately visible.
-              history.fireState(StateToken.of("todo/" + saved.getId()));
             })
         .onError(err -> msgEl.setInnerText("  Error: " + err.getMessage()))
         .sendJson(json);
@@ -297,10 +294,18 @@ public class DemoApp {
     HTMLDocument doc = Window.current().getDocument();
     showMessage(doc, "Loading todo #" + id + "...");
 
-    RestfulRequest.get(API + "/todos/" + id)
+    // PostgREST: filter by primary key using ?id=eq.<value>
+    get(API + "/todos?id=eq." + id)
         .onSuccess(
-            response ->
-                showDetail(doc, GeoTodo_MapperImpl.INSTANCE.read(response.getBodyAsString())))
+            response -> {
+              GeoTodo[] rows =
+                  GeoTodo_MapperImpl.INSTANCE.readArray(response.getBodyAsString(), GeoTodo[]::new);
+              if (rows.length > 0) {
+                showDetail(doc, rows[0]);
+              } else {
+                showMessage(doc, "Todo #" + id + " not found.");
+              }
+            })
         .onError(err -> showMessage(doc, "Could not load todo #" + id))
         .send();
   }
@@ -318,12 +323,13 @@ public class DemoApp {
     detailRow(doc, table, "Status", todo.isCompleted() ? "Completed" : "Open");
     detailRow(doc, table, "User ID", String.valueOf(todo.getUserId()));
 
-    double[] coords = LOCATIONS.get(todo.getId());
-    if (coords != null) {
+    if (todo.getLat() != null && todo.getLng() != null) {
       detailRow(
-          doc, table, "Coordinates", fmtCoord(coords[0]) + " N,  " + fmtCoord(coords[1]) + " E");
+          doc,
+          table,
+          "Coordinates",
+          fmtCoord(todo.getLat()) + " N,  " + fmtCoord(todo.getLng()) + " E");
 
-      // OpenStreetMap link row
       HTMLElement tr = doc.createElement("tr");
       HTMLElement th = doc.createElement("th");
       th.setInnerText("Map");
@@ -331,9 +337,9 @@ public class DemoApp {
       HTMLElement a = doc.createElement("a");
       String osmUrl =
           "https://www.openstreetmap.org/?mlat="
-              + String.format("%.6f", coords[0])
+              + String.format("%.6f", todo.getLat())
               + "&mlon="
-              + String.format("%.6f", coords[1])
+              + String.format("%.6f", todo.getLng())
               + "&zoom=15";
       a.setAttribute("href", osmUrl);
       a.setAttribute("target", "_blank");
@@ -355,7 +361,19 @@ public class DemoApp {
     contentEl.appendChild(backBtn);
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ── Request helpers ───────────────────────────────────────────────────────
+
+  /** GET with Accept header for PostgREST JSON responses. */
+  private static RestfulRequest get(String url) {
+    return RestfulRequest.get(url).putHeader("Accept", "application/json");
+  }
+
+  /** POST with Content-Type set for JSON body. */
+  private static RestfulRequest post(String url) {
+    return RestfulRequest.post(url).putHeader("Content-Type", "application/json");
+  }
+
+  // ── DOM helpers ───────────────────────────────────────────────────────────
 
   private static HTMLElement navButton(HTMLDocument doc, String label, String token) {
     HTMLElement btn = doc.createElement("button");
