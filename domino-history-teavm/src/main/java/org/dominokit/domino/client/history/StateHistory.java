@@ -220,7 +220,7 @@ public class StateHistory implements AppHistory {
 
   @Override
   public void removeListener(StateListener listener) {
-    listeners.remove(listener);
+    listeners.removeIf(historyListener -> historyListener.getListener() == listener);
   }
 
   @Override
