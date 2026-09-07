@@ -45,6 +45,20 @@ public class BrowserDateTimeFormatInfo implements DateTimeFormatInfo {
   public static final String TIME_H12MS = "dtf:h12ms";
   public static final String TIME_H12M = "dtf:h12m";
 
+  private final String locale;
+
+  /** Use the browser's default locale. */
+  public BrowserDateTimeFormatInfo() { this(null); }
+
+  /** Use an explicit BCP 47 locale for calendar labels. */
+  public BrowserDateTimeFormatInfo(String locale) { this.locale = locale; }
+
+  private JsIntlDateTimeFormat formatter(JsIntlDateTimeFormatOptions options) {
+    elemental2.core.JsArray<String> locales = new elemental2.core.JsArray<>();
+    if (locale != null && !locale.isEmpty()) locales.push(locale);
+    return new JsIntlDateTimeFormat(locales, options);
+  }
+
   // ---- cached locale data (computed on first call) ----
 
   private String[] monthsFull;
@@ -184,10 +198,10 @@ public class BrowserDateTimeFormatInfo implements DateTimeFormatInfo {
    * Builds a 12-element array of month names by formatting the 15th day of each month (year 2000)
    * with the given {@code month} style. Index 0 = January.
    */
-  private static String[] buildMonthNames(String style) {
+  private String[] buildMonthNames(String style) {
     JsIntlDateTimeFormatOptions opts = JsIntlDateTimeFormatOptions.create();
     opts.month = style;
-    JsIntlDateTimeFormat fmt = JsIntlDateTimeFormat.create(opts);
+    JsIntlDateTimeFormat fmt = formatter(opts);
     String[] names = new String[12];
     for (int m = 0; m < 12; m++) {
       names[m] = fmt.format(new JsDate(2000, m, 15));
@@ -199,10 +213,10 @@ public class BrowserDateTimeFormatInfo implements DateTimeFormatInfo {
    * Builds a 7-element array of weekday names, Sunday-first (index 0 = Sunday), by formatting known
    * dates in year 2000 (Jan 2 = Sunday) with the given {@code weekday} style.
    */
-  private static String[] buildWeekdayNames(String style) {
+  private String[] buildWeekdayNames(String style) {
     JsIntlDateTimeFormatOptions opts = JsIntlDateTimeFormatOptions.create();
     opts.weekday = style;
-    JsIntlDateTimeFormat fmt = JsIntlDateTimeFormat.create(opts);
+    JsIntlDateTimeFormat fmt = formatter(opts);
     String[] names = new String[7];
     // 2000-01-02 is a Sunday; step forward one day at a time
     for (int d = 0; d < 7; d++) {
@@ -215,11 +229,11 @@ public class BrowserDateTimeFormatInfo implements DateTimeFormatInfo {
    * Derives AM / PM strings by formatting a morning and an afternoon time and extracting the {@code
    * "dayPeriod"} part from {@code formatToParts()}.
    */
-  private static String[] buildAmpms() {
+  private String[] buildAmpms() {
     JsIntlDateTimeFormatOptions opts = JsIntlDateTimeFormatOptions.create();
     opts.hour = "numeric";
     opts.hour12 = true;
-    JsIntlDateTimeFormat fmt = JsIntlDateTimeFormat.create(opts);
+    JsIntlDateTimeFormat fmt = formatter(opts);
 
     String am = extractPart(fmt, new JsDate(2000, 0, 1, 9, 0, 0), "dayPeriod");
     String pm = extractPart(fmt, new JsDate(2000, 0, 1, 15, 0, 0), "dayPeriod");
