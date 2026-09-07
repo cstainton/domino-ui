@@ -26,7 +26,8 @@ public class DominoId {
   private static LazyInitializer seedInit =
       new LazyInitializer(
           () -> {
-            SEED = new JsDate().getTime() + "-";
+            // Integral epoch milliseconds avoid scientific notation in generated CSS identifiers.
+            SEED = (long) new JsDate().getTime() + "-";
           });
 
   /**
