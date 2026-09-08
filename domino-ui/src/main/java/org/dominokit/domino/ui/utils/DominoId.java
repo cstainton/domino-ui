@@ -26,7 +26,8 @@ public class DominoId {
   private static LazyInitializer seedInit =
       new LazyInitializer(
           () -> {
-            SEED = new JsDate().getTime() + "-";
+            // Keep the timestamp in decimal form when IDs are used in CSS selectors.
+            SEED = (long) new JsDate().getTime() + "-";
           });
 
   /**

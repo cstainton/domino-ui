@@ -35,7 +35,6 @@ public class DynamicStyleSheet<E extends HTMLElement, D extends BaseDominoElemen
   private final String cssPrefix;
   private final D target;
   private final HTMLStyleElement styleElement;
-  private CSSStyleSheet styleSheet;
   private DominoStyleSheet dominoStyleSheet = new DominoStyleSheet();
 
   /**
@@ -100,7 +99,7 @@ public class DynamicStyleSheet<E extends HTMLElement, D extends BaseDominoElemen
    * @return The {@code CSSStyleSheet} instance.
    */
   public CSSStyleSheet getStyleSheet() {
-    return styleSheet;
+    return (CSSStyleSheet) styleElement.sheet;
   }
 
   /**
